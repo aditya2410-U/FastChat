@@ -7,7 +7,16 @@ const ChatComponent = ({ clientId }) => {
   const [websckt, setWebsckt] = useState(null);
 
   useEffect(() => {
-    const url = `ws://localhost:8000/ws/${clientId}`;
+    // const url = `ws://localhost:8000/ws/${clientId}`;
+
+//     const backendUrl =
+//   window.location.hostname === "localhost"
+//     ? `ws://localhost:8000/ws/${clientId}`
+//     : `wss://fastchat-q0dc.onrender.com/ws/${clientId}`;
+
+// const ws = new WebSocket(backendUrl);
+
+    const url = `wss://fastchat-q0dc.onrender.com/ws/${clientId}`;
     const ws = new WebSocket(url);
 
     ws.onopen = () => {
