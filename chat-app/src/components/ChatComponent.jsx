@@ -67,6 +67,7 @@ const ChatComponent = ({ clientId }) => {
                       const parsedMessage = JSON.parse(msg.message);
                       return parsedMessage.message; // Extract only the actual message
                     } catch (error) {
+                      console.log(error);
                       return msg.message; // Fallback in case parsing fails
                     }
                   })()}
