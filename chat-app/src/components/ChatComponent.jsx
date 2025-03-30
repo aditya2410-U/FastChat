@@ -9,12 +9,12 @@ const ChatComponent = ({ clientId }) => {
   useEffect(() => {
     // const url = `ws://localhost:8000/ws/${clientId}`;
 
-//     const backendUrl =
-//   window.location.hostname === "localhost"
-//     ? `ws://localhost:8000/ws/${clientId}`
-//     : `wss://fastchat-q0dc.onrender.com/ws/${clientId}`;
+    //     const backendUrl =
+    //   window.location.hostname === "localhost"
+    //     ? `ws://localhost:8000/ws/${clientId}`
+    //     : `wss://fastchat-q0dc.onrender.com/ws/${clientId}`;
 
-// const ws = new WebSocket(backendUrl);
+    // const ws = new WebSocket(backendUrl);
 
     const url = `wss://fastchat-q0dc.onrender.com/ws/${clientId}`;
     const ws = new WebSocket(url);
@@ -29,7 +29,7 @@ const ChatComponent = ({ clientId }) => {
     };
 
     setWebsckt(ws);
-    
+
     return () => ws.close();
   }, [clientId]);
 
@@ -49,11 +49,29 @@ const ChatComponent = ({ clientId }) => {
           {messages.map((msg, index) => (
             <div
               key={index}
-              className={msg.clientId === clientId ? "my-message-container" : "another-message-container"}
+              className={
+                msg.clientId === clientId
+                  ? "my-message-container"
+                  : "another-message-container"
+              }
             >
-              <div className={msg.clientId === clientId ? "my-message" : "another-message"}>
+              <div
+                className={
+                  msg.clientId === clientId ? "my-message" : "another-message"
+                }
+              >
                 <p className="client">client id : {msg.clientId}</p>
-                <p className="message">{msg.message}</p>
+                <p className="message">
+                  {(() => {
+                    try {
+                      const parsedMessage = JSON.parse(msg.message);
+                      return parsedMessage.message; // Extract only the actual message
+                    } catch (error) {
+                      return msg.message; // Fallback in case parsing fails
+                    }
+                  })()}
+                </p>
+                <p className="message-time">{msg.time}</p>
               </div>
             </div>
           ))}
@@ -65,8 +83,15 @@ const ChatComponent = ({ clientId }) => {
             placeholder="Chat message ..."
             onChange={(e) => setMessage(e.target.value)}
             value={message}
+            onKeyDown={(e) => {
+              if (e.key === "Enter") {
+                sendMessage();
+              }
+            }}
           />
-          <button className="submit-chat" onClick={sendMessage}>Send</button>
+          <button className="submit-chat" onClick={sendMessage}>
+            Send
+          </button>
         </div>
       </div>
     </div>
