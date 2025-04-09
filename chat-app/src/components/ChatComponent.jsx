@@ -1,10 +1,20 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./chat.css";
 
 const ChatComponent = ({ clientId }) => {
   const [messages, setMessages] = useState([]);
   const [message, setMessage] = useState("");
   const [websckt, setWebsckt] = useState(null);
+  const containerRef = useRef(null);
+
+
+  const sendMessage = () => {
+    if (websckt && message.trim() !== "") {
+      websckt.send(JSON.stringify({ clientId, message }));
+      console.log(message);
+      setMessage("");
+    }
+  };
 
   useEffect(() => {
     // const url = `ws://localhost:8000/ws/${clientId}`;
@@ -25,6 +35,7 @@ const ChatComponent = ({ clientId }) => {
 
     ws.onmessage = (e) => {
       const receivedMessage = JSON.parse(e.data);
+      console.log("mere message: ", receivedMessage);
       setMessages((prevMessages) => [...prevMessages, receivedMessage]);
     };
 
@@ -33,19 +44,26 @@ const ChatComponent = ({ clientId }) => {
     return () => ws.close();
   }, [clientId]);
 
-  const sendMessage = () => {
-    if (websckt && message.trim() !== "") {
-      websckt.send(JSON.stringify({ clientId, message }));
-      setMessage("");
+  useEffect(() => {
+    const el = containerRef.current;
+    if (!el) return;
+  
+    const threshold = 150; // px from bottom
+    const isNearBottom = el.scrollTop + el.clientHeight >= el.scrollHeight - threshold;
+  
+    if (isNearBottom) {
+      // Auto-scroll if user is near the bottom
+      el.scrollTop = el.scrollHeight;
     }
-  };
+  }, [messages]);
+  
 
   return (
     <div className="container">
       <h1>Chat</h1>
       <h2>Your client id: {clientId}</h2>
-      <div className="chat-container">
-        <div className="chat">
+      <div className="chat-container" >
+        <div className="chat" ref={containerRef}>
           {messages.map((msg, index) => (
             <div
               key={index}
@@ -59,16 +77,17 @@ const ChatComponent = ({ clientId }) => {
                 className={
                   msg.clientId === clientId ? "my-message" : "another-message"
                 }
+                
               >
                 <p className="client">client id : {msg.clientId}</p>
                 <p className="message">
                   {(() => {
                     try {
                       const parsedMessage = JSON.parse(msg.message);
-                      return parsedMessage.message; // Extract only the actual message
+                      return parsedMessage.message; 
                     } catch (error) {
                       console.log(error);
-                      return msg.message; // Fallback in case parsing fails
+                      return msg.message; 
                     }
                   })()}
                 </p>
