@@ -4,7 +4,7 @@ Fast Chat is a real-time WebSocket-based chat application built with **FastAPI**
 
 ## 🚀 Live Demo
 
--  fast-chat-navy.vercel.app
+-  [fast-chat-navy.vercel.app](https://fast-chat-navy.vercel.app/)
 - **Frontend:** [Fast Chat Frontend](https://fast-chat-navy.vercel.app/)
 - **Backend:** [Fast Chat API](https://fastchat-q0dc.onrender.com)
 
